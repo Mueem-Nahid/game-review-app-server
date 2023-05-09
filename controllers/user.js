@@ -1,0 +1,53 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const User = require('../models/User');
+const {validateEmail, validateLength, validateUsername} = require("../helpers/validation");
+const {sendResponse} = require("../helpers/utils");
+
+// user register
+exports.register = async (req, res) => {
+   try {
+      const {first_name, last_name, email, password} = req.body;
+
+      if (!validateEmail(email)) {
+         return sendResponse(res, 400, 'Invalid email address');
+      }
+
+      const check = await User.findOne({email});
+      if (check) {
+         return sendResponse(res, 400, 'This email address already exists, try with a different email address');
+      }
+
+      if (!validateLength(first_name, 3, 15)) {
+         return sendResponse(res, 400, 'First name must be between 3 to 15 characters');
+      }
+
+      if (!validateLength(last_name, 3, 15)) {
+         return sendResponse(res, 400, 'Last name must be between 3 to 15 characters');
+      }
+
+      if (!validateLength(password, 6, 20)) {
+         return sendResponse(res, 400, 'Password must be between 6 to 15 characters');
+      }
+
+      const cryptedPassword = await bcrypt.hash(password, 12);
+      let tempUsername = first_name + last_name;
+      let newUsername = await validateUsername(tempUsername);
+
+      const user = await new User({
+         first_name, last_name, email, username: newUsername, password: cryptedPassword
+      }).save();
+
+      return sendResponse(res, 200, 'Registration successful. Login to your account.',
+         {
+            id: user._id,
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+         });
+
+   } catch (error) {
+      return sendResponse(res, 500, error.message);
+   }
+}
