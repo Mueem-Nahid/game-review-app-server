@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const {validateEmail, validateLength, validateUsername} = require("../helpers/validation");
 const {sendResponse} = require("../helpers/utils");
+const {generateToken} = require("../helpers/tokens");
 
 // user register
 exports.register = async (req, res) => {
@@ -47,6 +48,33 @@ exports.register = async (req, res) => {
             last_name: user.last_name,
          });
 
+   } catch (error) {
+      return sendResponse(res, 500, error.message);
+   }
+}
+
+// user login
+exports.login = async (req, res) => {
+   try {
+      const {email, password} = req.body;
+      const user = await User.findOne({email});
+      if (!user) {
+         return sendResponse(res, 400, 'User not found');
+      }
+      const check = await bcrypt.compare(password, user.password);
+      if (!check) {
+         return sendResponse(res, 400, 'Invalid credentials. Please try again.');
+      }
+      const token = generateToken({id: user._id.toString()}, '7d')
+      return sendResponse(res, 200, 'Login successful.',
+         {
+            id: user._id,
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            user_type: user.user_type,
+            token: token,
+         });
    } catch (error) {
       return sendResponse(res, 500, error.message);
    }
