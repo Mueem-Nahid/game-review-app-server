@@ -16,7 +16,7 @@ const gameSchema = new mongoose.Schema({
       type: String,
       required: true
    },
-   publishedDate: {
+   releaseDate: {
       type: Date,
       required: true
    },
@@ -29,14 +29,28 @@ const gameSchema = new mongoose.Schema({
       default: 0
    },
    reviewComments: [{
-      user: {
-         type: String,
-         required: true
+      commentedBy: {
+         type: ObjectId,
+         ref: "user",
       },
       comment: {
          type: String,
-         required: true
-      }
+      },
+      rating: {
+         type: Number,
+      },
+      location: {
+         lat: {
+            type: Number,
+         },
+         lon: {
+            type: Number,
+         },
+      },
+      commentedAt: {
+         type: Date,
+         default: new Date(),
+      },
    }],
    postedAt: {
       type: Date,
