@@ -6,12 +6,11 @@ const {sendResponse} = require("../helpers/utils");
 exports.addCommentAndRating = async (req, res) => {
    try {
       const {gameId} = req.params;
-      const {comment, rating} = req.body; // Assuming comment and rating are provided in the request body
+      const {comment, rating} = req.body;
 
       // Retrieve the user's IP address from the request
       const userIp = req.ip;
-
-      // console.log(req)
+      console.log("userIp= ", userIp)
 
       // Determine the user's location based on the IP address
       const geo = lookup(userIp);
