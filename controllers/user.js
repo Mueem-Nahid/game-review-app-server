@@ -5,6 +5,8 @@ const User = require('../models/User');
 const {validateEmail, validateLength, validateUsername} = require("../helpers/validation");
 const {sendResponse} = require("../helpers/utils");
 const {generateToken} = require("../helpers/tokens");
+const mongoose = require("mongoose");
+const Game = require("../models/Game");
 
 // user register
 exports.register = async (req, res) => {
@@ -79,3 +81,20 @@ exports.login = async (req, res) => {
       return sendResponse(res, 500, error.message);
    }
 }
+
+exports.getUserById = async (req, res) => {
+   try {
+      const {id} = req.params;
+      const isValidId = mongoose.Types.ObjectId.isValid(id);
+      if (isValidId) {
+         const user = await User.findById(id);
+         if (user && user.user_type === 'admin') {
+            return sendResponse(res, 200, "User found.", {user});
+         }
+         return sendResponse(res, 404, "User not found.");
+      }
+      return sendResponse(res, 404, "User not found.");
+   } catch (error) {
+      return sendResponse(res, 500, error.message);
+   }
+};
