@@ -2,7 +2,7 @@
 const fs = require("fs");
 
 exports.sendResponse = (res, status, message, data = null) => {
-   return res.status(status).json({
+   return res?.status(status).json({
       status: status,
       message: message,
       data: data

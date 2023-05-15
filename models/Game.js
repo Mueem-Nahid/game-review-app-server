@@ -10,7 +10,7 @@ const gameSchema = new mongoose.Schema({
    }, summary: {
       type: String, required: true
    }, picture: {
-      type: String, required: true
+      type: Array, required: true
    }, releaseDate: {
       type: Date, required: true
    }, averageRating: {
