@@ -30,7 +30,7 @@ exports.addCommentAndRating = async (req, res) => {
          return sendResponse(res, 404, 'Game not found.');
       }
 
-      return sendResponse(res, 200, 'Comment and rating added successfully.', {game: updatedGame});
+      return sendResponse(res, 200, 'Comment and rating added successfully.', newComment);
    } catch (error) {
       return sendResponse(res, 500, error.message);
    }
