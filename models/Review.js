@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
+
 const {mongo, Schema} = require("mongoose");
 
 const {ObjectId} = mongoose.Schema;
 
 const reviewSchema = new mongoose.Schema({
    _id: {
-      type: ObjectId, auto: true,
-   }, commentedBy: {
+      type: ObjectId,
+   },
+   commentedBy: {
       type: ObjectId, ref: "User",
    }, comment: {
       type: String,
@@ -21,4 +23,4 @@ const reviewSchema = new mongoose.Schema({
    }, commentedAt: {
       type: Date, default: new Date(),
    },
-}, {_id: false})
+},)

@@ -2,6 +2,7 @@ const {lookup} = require("geoip-lite");
 
 const Game = require('../models/Game');
 const {sendResponse} = require("../helpers/utils");
+const {Types} = require("mongoose");
 
 exports.addCommentAndRating = async (req, res) => {
    try {
@@ -17,8 +18,10 @@ exports.addCommentAndRating = async (req, res) => {
       const lat = geo && geo.ll ? geo.ll[0] : null;
       const lon = geo && geo.ll ? geo.ll[1] : null;
 
+      let id = new Types.ObjectId();
       // Create a new comment object with the retrieved location
       const newComment = {
+         id: id,
          commentedBy: req.user._id,
          comment: comment, rating: rating, commentedAt: new Date(), location: {lat: lat, lon: lon},
       };
@@ -41,14 +44,29 @@ exports.deleteComment = async (req, res) => {
    try {
       const {gameId, commentId} = req.params;
 
-      // Find the game by ID and remove the specified comment
-      const updatedGame = await Game.findOneAndUpdate({_id: gameId}, {$pull: {reviewComments: {_id: commentId}}}, {new: true});
+      // Check if the commentId is a valid ObjectId
+      if (!Types.ObjectId.isValid(commentId)) {
+         return sendResponse(res, 400, 'Invalid commentId.');
+      }
 
-      if (!updatedGame) {
+      // Find the game by ID and check if the comment exists
+      const game = await Game.findById(gameId);
+      if (!game) {
          return sendResponse(res, 404, 'Game not found.');
       }
 
-      return sendResponse(res, 200, 'Comment deleted successfully.', {game: updatedGame});
+      const commentIndex = game.reviewComments.findIndex(comment => comment.id.toString() === commentId);
+      if (commentIndex === -1) {
+         return sendResponse(res, 404, 'Comment not found.');
+      }
+
+      // Remove the comment from the reviewComments array
+      game.reviewComments.splice(commentIndex, 1);
+
+      // Save the updated game
+      await game.save();
+
+      return sendResponse(res, 200, 'Comment deleted successfully.', {game});
    } catch (error) {
       return sendResponse(res, 500, error.message);
    }
