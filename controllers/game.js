@@ -14,7 +14,7 @@ exports.addGame = async (req, res) => {
 exports.allGames = async (req, res) => {
    try {
       const games = await Game.find()
-         .populate("reviewComments.commentedBy", "username first_name last_name", "User").sort({createdAt: -1});
+         .populate("reviewComments.commentedBy", "username first_name last_name", "User").sort({postedAt: -1});
 
       return sendResponse(res, 200, "All games.", {games});
    } catch (error) {
