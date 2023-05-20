@@ -11,10 +11,12 @@ exports.addCommentAndRating = async (req, res) => {
 
       // Retrieve the user's IP address from the request
       const userIp = req.ip;
-      console.log("userIp= ", userIp)
+      console.log("userIp-> ", userIp)
 
       // Determine the user's location based on the IP address
       const geo = lookup(userIp);
+      console.log("geo-> ", geo)
+
       const lat = geo && geo.ll ? geo.ll[0] : null;
       const lon = geo && geo.ll ? geo.ll[1] : null;
 
