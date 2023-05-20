@@ -68,7 +68,7 @@ exports.deleteComment = async (req, res) => {
       // Save the updated game
       await game.save();
 
-      return sendResponse(res, 200, 'Comment deleted successfully.', {game});
+      return sendResponse(res, 204, 'Comment deleted successfully.');
    } catch (error) {
       return sendResponse(res, 500, error.message);
    }
